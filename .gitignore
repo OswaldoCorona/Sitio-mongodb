@@ -1,0 +1,18 @@
+# Archivos compilados (Java genera esto cada que corres el programa)
+/target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# Archivos de configuración de VS Code y Eclipse
+.settings/
+.classpath
+.project
+.factorypath
+.vscode/
+
+# Archivos temporales del sistema
+.DS_Store
+Thumbs.db
+
+# Configuración personal (opcional, si usas archivos .env)
+*.log
+*.temp
