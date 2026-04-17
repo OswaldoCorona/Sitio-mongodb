@@ -13,42 +13,60 @@ import com.itat.persona.repository.PersonaRepository;
 @Controller
 public class PersonaController {
     
-    // Inyectamos el repositorio para interactuar con MongoDB Atlas
     @Autowired
     private PersonaRepository personaRepository;
 
+    /**
+     * Carga la página de inicio (Landing Page) del sistema.
+     * @return El nombre de la plantilla HTML "home".
+     */
     @GetMapping("/")
     public String home() {
         return "home"; 
     }
 
-    // Listar todas las personas desde la base de datos
+    /**
+     * Prepara el modelo con la lista de personas y un objeto vacío para el formulario.
+     * @param model Objeto de Spring UI para enviar datos a la vista.
+     * @return El nombre de la plantilla HTML "crud-persona".
+     */
     @GetMapping("/personas")
     public String mostrarFormularioYLista(Model model) {
         model.addAttribute("persona", new Persona()); 
-        model.addAttribute("personas", personaRepository.findAll()); // Trae todo de MongoDB
+        model.addAttribute("personas", personaRepository.findAll());
         return "crud-persona";
     }
 
-    // Guardar una nueva persona
+    /**
+     * Procesa el envío del formulario para registrar una nueva persona en MongoDB.
+     * @param persona El objeto con los datos capturados en el formulario.
+     * @return Una redirección a la ruta de la lista de personas.
+     */
     @PostMapping("/guardar")
     public String guardarPersona(Persona persona) {
-        // No necesitamos setear ID, MongoDB lo genera automáticamente
         personaRepository.save(persona); 
         return "redirect:/personas";
     }
 
-    // Eliminar por ID (ahora el ID es String)
+    /**
+     * Elimina un registro de la base de datos basado en su identificador único.
+     * @param id El identificador (String) de la persona a eliminar.
+     * @return Una redirección a la ruta de la lista de personas.
+     */
     @GetMapping("/eliminar/{id}")
     public String eliminarPersona(@PathVariable String id) {
         personaRepository.deleteById(id);
         return "redirect:/personas";
     }
 
-    // Mostrar formulario de edición buscando en la base de datos
+    /**
+     * Busca los datos de una persona para cargarlos en el formulario de edición.
+     * @param id El identificador de la persona a editar.
+     * @param model Objeto para pasar los datos de la persona encontrada a la vista.
+     * @return El nombre de la plantilla "edit-persona" o redirección si no existe.
+     */
     @GetMapping("/editar/{id}")
     public String mostrarFormularioEdicion(@PathVariable String id, Model model) {
-        // Buscamos a la persona por su ID en Mongo
         Persona persona = personaRepository.findById(id).orElse(null);
 
         if (persona != null) {
@@ -58,13 +76,15 @@ public class PersonaController {
         return "redirect:/personas";
     }
 
-    // Actualizar persona
+    /**
+     * Sobrescribe los datos de una persona existente con la nueva información.
+     * @param id El identificador de la persona que se va a actualizar.
+     * @param personaActualizada El objeto con los nuevos datos cargados.
+     * @return Una redirección a la lista de personas actualizada.
+     */
     @PostMapping("/actualizar/{id}")
     public String actualizarPersona (@PathVariable String id, Persona personaActualizada) {
-        // Aseguramos que el objeto tenga el ID correcto antes de guardar
         personaActualizada.setId(id); 
-        // .save() en Spring Data funciona como "insert" si el ID es nuevo 
-        // o como "update" si el ID ya existe en la base de datos
         personaRepository.save(personaActualizada);
         return "redirect:/personas";
     }
